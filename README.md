@@ -28,7 +28,7 @@ Repository containing tasks for Advanced Software Modelling and Design exam.
 
 [license-shield]: https://img.shields.io/github/license/roostico/scooby.svg?style=flat
 
-[license-url]: https://github.com/FreshMag/asmd23/blob/master/LICENSE.txt
+[license-url]: https://github.com/FreshMag/asmd23/blob/master/LICENSE
 
 [conventional-commits-shield]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits
 
