@@ -118,3 +118,6 @@ project/.bloop/
 .vscode/
 project/metals.sbt
 project/project/metals.sbt
+
+
+.DS_Store
