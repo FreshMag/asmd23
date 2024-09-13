@@ -57,7 +57,8 @@ class SwingFunctionalFacade {
         public Frame drawEllipse(String panelName, int x, int y, int radius) {
             if (this.jPanels.containsKey(panelName)) {
                 var panel = this.jPanels.get(panelName);
-                if (panel instanceof SwingCustomComponents.BallPanel drawablePanel) {
+                if (panel instanceof SwingCustomComponents.BallPanel) {
+                    var drawablePanel = (SwingCustomComponents.BallPanel) panel;
                     drawablePanel.drawBall(x, y, radius);
                     drawablePanel.repaint();
                 }
