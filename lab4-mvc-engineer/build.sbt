@@ -1,13 +1,10 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
-
-ThisBuild / scalaVersion := "3.4.0"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "course-asmd23-04-adv-prg-patterns",
+    name := "lab4-mvc-engineer",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.12" % Test,
-      "org.scalacheck" %% "scalacheck" % "1.17.0"
+      "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+      "org.scalacheck" %% "scalacheck" % "1.17.1"
     ),
     Compile / scalaSource := baseDirectory.value / "src" / "main",
     Test / scalaSource := baseDirectory.value / "src" / "test",
