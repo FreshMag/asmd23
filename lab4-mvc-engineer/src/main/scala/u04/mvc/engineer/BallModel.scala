@@ -33,8 +33,8 @@ object BallModel:
     opaque type Ball = BallImpl
     opaque type World = (Int, Int)
 
-    def initialState(width: Int, height: Int, maxSpeed: Int = 5, ballRadius: Int = 10): Game =
-      ((width, height), Ball.randomBall(width, height, maxSpeed, ballRadius))
+    def initialState(width: Int, height: Int, speed: Int = 5, ballRadius: Int = 10): Game =
+      ((width, height), Ball.randomBall(width, height, speed, ballRadius))
 
     def updateState(): State[Game, Game] =
       State(

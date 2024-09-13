@@ -1,5 +1,5 @@
 package u04.monads
-import u04.datastructures.Streams.*, Stream.*
+import scala.collection.immutable.LazyList
 
 object Monads:
 
@@ -19,10 +19,13 @@ object Monads:
     def seq[M[_]: Monad, A, B](m: M[A], m2: => M[B]): M[B] =
       map2(m, m2)((a, b) => b)
 
-    def seqN[M[_]: Monad, A](stream: Stream[M[A]]): M[A] =
+    def seqN[M[_]: Monad, A](stream: LazyList[M[A]]): M[A] =
       stream match
-        case Cons(h, t) => (h(), t()) match
-          case (m, Empty()) => m
-          case (m, s) => seq(m, seqN(s))
+        case LazyList() => summon[Monad[M]].unit(throw new NoSuchElementException("Empty stream"))
+        case h #:: t =>
+          h.flatMap { a =>
+            if t.isEmpty then summon[Monad[M]].unit(a)
+            else seqN(t)
+          }
 
     // ... many others exist

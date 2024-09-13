@@ -1,7 +1,7 @@
 package scala.u04.mvc.engineer
 
 import u04.monads.States.State
-import u04.datastructures.Streams.Stream
+import scala.collection.immutable.LazyList
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -14,7 +14,7 @@ object BallView:
     def addBallView(): State[Window, Unit]
     def drawBall(x: Int, y: Int, radius: Int): State[Window, Unit]
     def show(): State[Window, Unit]
-    def eventStream(): State[Window, Stream[String]]
+    def eventStream(): State[Window, LazyList[String]]
 
   object WindowStateImpl extends WindowState:
 
@@ -36,5 +36,5 @@ object BallView:
     def show(): State[Window, Unit] =
       State(w => (w.show(), ()))
 
-    def eventStream(): State[Window, Stream[String]] =
-      State(w => (w, Stream.generate(() => w.events().get)))
+    def eventStream(): State[Window, LazyList[String]] =
+      State(w => (w, LazyList.continually(w.events().get)))

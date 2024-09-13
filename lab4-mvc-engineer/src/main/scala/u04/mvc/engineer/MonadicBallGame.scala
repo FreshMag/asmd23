@@ -1,6 +1,5 @@
 package scala.u04.mvc.engineer
 
-import u04.datastructures.Streams.Stream
 import u04.monads.States.State.*
 import u04.monads.States.State
 import u04.monads.Monads.*
@@ -11,11 +10,13 @@ import scala.u04.mvc.engineer.BallModel.GameStateImpl.*
 import scala.u04.mvc.engineer.BallView.WindowStateImpl.*
 import scala.u04.mvc.engineer.BallController.ControllerImpl.*
 import scala.u04.mvc.engineer.BallController.ControllerImpl.Event
+import scala.collection.immutable.LazyList
+
 
 
 @main def ballGame(): Unit =
   
-  def windowCreation(width: Int, height: Int): State[Window, Stream[String]] = for
+  def windowCreation(width: Int, height: Int): State[Window, LazyList[String]] = for
     _ <- setSize(width, height)
     _ <- addBallView()
     _ <- show()
@@ -34,9 +35,9 @@ import scala.u04.mvc.engineer.BallController.ControllerImpl.Event
 
   val controller = for
     events <- mv(nop(), _ => windowCreation(width, height))
-    _ <- gameLoop(events, updateModel(), updateView, period)
+    _ <- gameLoop(events, updateModel(), updateView, period) 
   yield ()
 
-  controller((initialState(width, height, ballRadius = 50, maxSpeed = 20), initialWindow))
+  controller((initialState(width, height, ballRadius = 50, speed = 20), initialWindow))
 
 

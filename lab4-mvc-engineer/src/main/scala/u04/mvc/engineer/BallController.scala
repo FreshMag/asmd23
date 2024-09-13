@@ -1,6 +1,6 @@
 package scala.u04.mvc.engineer
 
-import u04.datastructures.Streams.Stream
+import scala.collection.immutable.LazyList
 import u04.monads.States.State.*
 import u04.monads.States.State
 import u04.monads.Monads.*
@@ -21,7 +21,7 @@ object BallController:
     type Event
 
     def gameLoop(
-      events: Stream[Event],
+      events: LazyList[Event],
       updateM: State[Model, ModelOut],
       updateV: ModelOut => State[View, Unit],
       period: FiniteDuration
@@ -44,7 +44,7 @@ object BallController:
       State(w => (w.schedule(period.toMillis.toInt, "Loop"), ()))
 
     override def gameLoop(
-         events: Stream[String],
+         events: LazyList[String],
          updateM: State[Game, BallPosition],
          updateV: BallPosition => State[Window, Unit],
          period: FiniteDuration
