@@ -8,7 +8,6 @@
 [![MIT License][license-shield]][license-url]
 [![Conventional Commits][conventional-commits-shield]][conventional-commits-url]
 
-# ASMD 23-24
 
 Repository containing tasks for Advanced Software Modelling and Design exam.
 
