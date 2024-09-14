@@ -1,8 +1,7 @@
-package scala.u04.mvc.engineer
+package u04.mvc.engineer
 
 import java.awt.{Color, Graphics, Graphics2D}
 import javax.swing.JPanel
-
 
 object SwingCustomComponents:
   class BallPanel extends JPanel:

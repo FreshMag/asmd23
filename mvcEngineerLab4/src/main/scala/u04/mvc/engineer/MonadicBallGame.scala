@@ -1,15 +1,13 @@
-package scala.u04.mvc.engineer
+package u04.mvc.engineer
 
-import u04.monads.States.State.*
-import u04.monads.States.State
 import u04.monads.Monads.*
 import u04.monads.Monads.Monad.*
+import u04.monads.States.State
+import u04.monads.States.State.*
+import u04.mvc.engineer.BallController.ControllerImpl.*
+import u04.mvc.engineer.BallModel.GameStateImpl.*
+import u04.mvc.engineer.BallView.WindowStateImpl.*
 
-import scala.concurrent.duration.FiniteDuration
-import scala.u04.mvc.engineer.BallModel.GameStateImpl.*
-import scala.u04.mvc.engineer.BallView.WindowStateImpl.*
-import scala.u04.mvc.engineer.BallController.ControllerImpl.*
-import scala.u04.mvc.engineer.BallController.ControllerImpl.Event
 import scala.collection.immutable.LazyList
 
 

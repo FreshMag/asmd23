@@ -1,4 +1,4 @@
-package scala.u04.mvc.engineer
+package u04.mvc.engineer
 
 import scala.collection.immutable.LazyList
 import u04.monads.States.State.*
@@ -7,9 +7,9 @@ import u04.monads.Monads.*
 import u04.monads.Monads.Monad.*
 
 import scala.concurrent.duration.FiniteDuration
-import scala.u04.mvc.engineer.BallModel.GameStateImpl.*
-import scala.u04.mvc.engineer.BallView.WindowStateImpl
-import scala.u04.mvc.engineer.BallView.WindowStateImpl.Window
+import u04.mvc.engineer.BallModel.GameStateImpl.*
+import u04.mvc.engineer.BallView.WindowStateImpl
+import u04.mvc.engineer.BallView.WindowStateImpl.Window
 
 
 object BallController:
