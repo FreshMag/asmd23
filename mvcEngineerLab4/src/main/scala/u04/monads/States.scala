@@ -1,7 +1,10 @@
 package u04.monads
-import u04.monads.Monads.*
-import u04.monads.Monads.Monad.*
 
+import u04.monads.Monads.Monad
+
+/**
+ * Taken from Lab 4 
+ */
 object States:
 
   // data structure for state (evolution)
