@@ -1,4 +1,4 @@
-package scala.u04.mvc.engineer;
+package u04.mvc.engineer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,7 +58,7 @@ class SwingFunctionalFacade {
             if (this.jPanels.containsKey(panelName)) {
                 var panel = this.jPanels.get(panelName);
                 if (panel instanceof SwingCustomComponents.BallPanel) {
-                    var drawablePanel = (SwingCustomComponents.BallPanel) panel;
+                    SwingCustomComponents.BallPanel drawablePanel = (SwingCustomComponents.BallPanel) panel;
                     drawablePanel.drawBall(x, y, radius);
                     drawablePanel.repaint();
                 }

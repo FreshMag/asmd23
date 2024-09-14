@@ -1,9 +1,8 @@
-package scala.u04.mvc.engineer
+package u04.mvc.engineer
 
 import u04.monads.States.State
-import scala.collection.immutable.LazyList
 
-import scala.concurrent.duration.FiniteDuration
+import scala.collection.immutable.LazyList
 
 object BallView:
 
@@ -18,7 +17,7 @@ object BallView:
 
   object WindowStateImpl extends WindowState:
 
-    import scala.u04.mvc.engineer.SwingFunctionalFacade.*
+    import u04.mvc.engineer.SwingFunctionalFacade.*
 
     type Window = Frame
 
