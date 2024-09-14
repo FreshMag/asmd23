@@ -10,6 +10,9 @@ import u04.mvc.engineer.BallView.WindowStateImpl.*
 
 import scala.collection.immutable.LazyList
 
+/**
+ * Simple ball bouncing on walls simulation.
+ */
 @main def ballGame(): Unit =
 
   def windowCreation(width: Int, height: Int): State[Window, LazyList[String]] =
