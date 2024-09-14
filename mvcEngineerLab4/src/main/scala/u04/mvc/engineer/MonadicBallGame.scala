@@ -10,16 +10,15 @@ import u04.mvc.engineer.BallView.WindowStateImpl.*
 
 import scala.collection.immutable.LazyList
 
-
-
 @main def ballGame(): Unit =
-  
-  def windowCreation(width: Int, height: Int): State[Window, LazyList[String]] = for
-    _ <- setSize(width, height)
-    _ <- addBallView()
-    _ <- show()
-    events <- eventStream()
-  yield events
+
+  def windowCreation(width: Int, height: Int): State[Window, LazyList[String]] =
+    for
+      _ <- setSize(width, height)
+      _ <- addBallView()
+      _ <- show()
+      events <- eventStream()
+    yield events
 
   import scala.concurrent.duration.DurationInt
 
@@ -31,11 +30,10 @@ import scala.collection.immutable.LazyList
 
   def updateView(ball: BallPosition): State[Window, Unit] = drawBall(ball._1, ball._2, ball._3)
 
-  val controller = for
-    events <- mv(nop(), _ => windowCreation(width, height))
-    _ <- gameLoop(events, updateModel(), updateView, period) 
-  yield ()
+  val controller =
+    for
+      events <- mv(nop(), _ => windowCreation(width, height))
+      _ <- gameLoop(events, updateModel(), updateView, period)
+    yield ()
 
   controller((initialState(width, height, ballRadius = 50, speed = 20), initialWindow))
-
-
