@@ -8,7 +8,7 @@ ThisBuild / scalaVersion := "3.4.0"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "asmd23-24",
+    name := "asmd23-24"
   ).aggregate(
     mvcEngineerLab4
   )
@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
 lazy val mvcEngineerLab4 = project
   .settings(
     name := "mvcEngineerLab4",
-    libraryDependencies ++= commonDependencies,
+    libraryDependencies ++= commonDependencies
   )
 
 // ================================================================================================
@@ -25,20 +25,20 @@ lazy val mvcEngineerLab4 = project
 
 lazy val dependencies =
   new {
-    val junitInterfaceV       = "0.13.3"
-    val scalatestV            = "3.2.18"
-    val junitV                = "4.13.2"
-    val scalacheckV           = "1.17.1"
+    val junitInterfaceV = "0.13.3"
+    val scalatestV = "3.2.18"
+    val junitV = "4.13.2"
+    val scalacheckV = "1.17.1"
 
-    val junitInterface        = "com.github.sbt" % "junit-interface" % junitInterfaceV
-    val scalatest             = "org.scalatest" %% "scalatest" % scalatestV
-    val junit                 = "junit" % "junit" % junitV
-    val scalacheck            = "org.scalacheck" %% "scalacheck" % scalacheckV
+    val junitInterface = "com.github.sbt" % "junit-interface" % junitInterfaceV
+    val scalatest = "org.scalatest" %% "scalatest" % scalatestV
+    val junit = "junit" % "junit" % junitV
+    val scalacheck = "org.scalacheck" %% "scalacheck" % scalacheckV
   }
 
 lazy val commonDependencies = Seq(
   dependencies.junitInterface % Test,
   dependencies.scalacheck % Test,
   dependencies.junit % Test,
-  dependencies.scalatest % Test,
+  dependencies.scalatest % Test
 )

@@ -9,17 +9,22 @@ import java.util.function.Supplier;
 
 class SwingFunctionalFacade {
 
-    public interface Frame {
-        Frame setSize(int width, int height);
-        Frame addPanel(JPanel panel, String name);
-        Frame drawEllipse(String panelName, int x, int y, int radius);
-        Frame schedule(int millis, String eventName);
-        Frame show();
-        Supplier<String> events();        
+    public static Frame createFrame() {
+        return new FrameImpl();
     }
 
-    public static Frame createFrame(){
-        return new FrameImpl();
+    public interface Frame {
+        Frame setSize(int width, int height);
+
+        Frame addPanel(JPanel panel, String name);
+
+        Frame drawEllipse(String panelName, int x, int y, int radius);
+
+        Frame schedule(int millis, String eventName);
+
+        Frame show();
+
+        Supplier<String> events();
     }
 
     private static class FrameImpl implements Frame {
@@ -27,12 +32,13 @@ class SwingFunctionalFacade {
         private final Map<String, JPanel> jPanels = new HashMap<>();
         private final LinkedBlockingQueue<String> eventQueue = new LinkedBlockingQueue<>();
         private final Supplier<String> events = () -> {
-            try{
+            try {
                 return eventQueue.take();
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 return "";
             }
         };
+
         public FrameImpl() {
             this.jframe.setLayout(new GridLayout(1, 1));
             this.jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,9 +77,10 @@ class SwingFunctionalFacade {
             Timer timer = new Timer(millis, (ev) -> {
                 try {
                     eventQueue.put(eventName);
-                } catch (InterruptedException ex){}
+                } catch (InterruptedException ex) {
+                }
             });
-            timer.setRepeats(false); 
+            timer.setRepeats(false);
             timer.start();
             return this;
         }

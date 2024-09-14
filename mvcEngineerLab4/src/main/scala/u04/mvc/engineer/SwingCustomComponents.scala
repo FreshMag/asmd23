@@ -1,6 +1,6 @@
 package u04.mvc.engineer
 
-import java.awt.{Color, Graphics, Graphics2D}
+import java.awt.{Color, Graphics}
 import javax.swing.JPanel
 
 object SwingCustomComponents:
