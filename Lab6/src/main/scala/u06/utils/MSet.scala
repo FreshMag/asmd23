@@ -1,18 +1,25 @@
+/**
+ * Modified version of the original `MSet.scala` from Lab6
+ */
 package u06.utils
 
-// A multiset datatype
+/**
+ * A multiset datatype
+ */
 trait MSet[A] extends (A => Int):
-  def union(m: MSet[A]): MSet[A]
-  def diff(m: MSet[A]): MSet[A]
-  def disjoined(m: MSet[A]): Boolean
+  infix def union(m: MSet[A]): MSet[A]
+  infix def diff(m: MSet[A]): MSet[A]
+  infix def disjointed(m: MSet[A]): Boolean
   def size: Int
-  def matches(m: MSet[A]): Boolean
-  def extract(m: MSet[A]): Option[MSet[A]]
+  infix def matches(m: MSet[A]): Boolean
+  infix def extract(m: MSet[A]): Option[MSet[A]]
   def asList: List[A]
   def asMap: Map[A, Int]
   def iterator: Iterator[A]
 
-// Functional-style helpers/implementation
+/**
+ * Functional-style helpers/implementation
+ */
 object MSet:
   // Factories
   def apply[A](l: A*): MSet[A] = new MSetImpl(l.toList)
@@ -22,16 +29,16 @@ object MSet:
   // Hidden reference implementation
   private case class MSetImpl[A](asMap: Map[A, Int]) extends MSet[A]:
     def this(list: List[A]) = this(list.groupBy(a => a).map((a, n) => (a, n.size)))
-    override val asList =
+    override val asList: List[A] =
       asMap.toList.flatMap((a, n) => List.fill(n)(a))
 
-    override def apply(v1: A) = asMap.getOrElse(v1, 0)
-    override def union(m: MSet[A]) = new MSetImpl[A](asList ++ m.asList)
-    override def diff(m: MSet[A]) = new MSetImpl[A](asList diff m.asList)
-    override def disjoined(m: MSet[A]) = (asList intersect m.asList).isEmpty
-    override def size = asList.size
-    override def matches(m: MSet[A]) = extract(m).isDefined
-    override def extract(m: MSet[A]) =
+    override infix def apply(v1: A): Int = asMap.getOrElse(v1, 0)
+    override infix def union(m: MSet[A]) = new MSetImpl[A](asList ++ m.asList)
+    override infix def diff(m: MSet[A]) = new MSetImpl[A](asList diff m.asList)
+    override infix def disjointed(m: MSet[A]): Boolean = (asList intersect m.asList).isEmpty
+    override def size: Int = asList.size
+    override infix def matches(m: MSet[A]): Boolean = extract(m).isDefined
+    override infix def extract(m: MSet[A]): Option[MSet[A]] =
       Some(this diff m) filter (_.size == size - m.size)
-    override def iterator = asMap.keysIterator
+    override def iterator: Iterator[A] = asMap.keysIterator
     override def toString = s"{${asList.mkString("|")}}"

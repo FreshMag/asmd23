@@ -1,10 +1,12 @@
 package u06.modelling
 
-// The definition of a Rewrite System, as a function: S => Set[S]
+/**
+ * The definition of a Rewrite System, as a function: S => Set[S]
+ */
 trait System[S]:
   def next(a: S): Set[S]
 
-// Our factory of Systems
+
 object System:
 
   // The most general case, an intensional one
