@@ -5,6 +5,7 @@ object PetriNets:
   export u06.modelling.PetriNet.*
   export u06.utils.MSet
   export u06.modelling.PetriNet
+  export u06.modelling.SystemAnalysis.*
 
   enum Place2:
     case P1, P2
