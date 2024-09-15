@@ -19,6 +19,12 @@ lazy val mvcEngineerLab4 = project
     libraryDependencies ++= commonDependencies
   )
 
+lazy val Lab6 = project
+  .settings(
+    name := "Lab6",
+    libraryDependencies ++= commonDependencies
+  )
+
 // ================================================================================================
 //  DEPENDENCIES
 // ================================================================================================
