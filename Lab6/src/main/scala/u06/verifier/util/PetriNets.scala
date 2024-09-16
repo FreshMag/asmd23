@@ -6,6 +6,7 @@ object PetriNets:
   export u06.utils.MSet
   export u06.modelling.PetriNet
   export u06.modelling.SystemAnalysis.*
+  import u06.modelling.System
 
   enum Place2:
     case P1, P2
@@ -28,22 +29,24 @@ object PetriNets:
   enum Place7:
     case P1, P2, P3, P4, P5, P6, P7
 
-  def >[A](l: A*): MSet[A] = MSet(l*)
+  def \[A](l: A*): MSet[A] = MSet(l*)
+
+  def PN[T](transitions: Trn[T]*): System[Marking[T]] = PetriNet[T](transitions*).toSystem
 
   import Place7.*
-  def readersAndWriters: PetriNet[Place7] = PetriNet[Place7](
-    >(P1) ~~> >(P2),
-    >(P2) ~~> >(P3),
-    >(P2) ~~> >(P4),
-    >(P3, P5) ~~> >(P5, P6),
-    >(P4, P5) ~~> >(P7) ^^^ >(P6),
-    >(P6) ~~> >(P1),
-    >(P7) ~~> >(P1, P5)
+  def readersAndWriters: System[Marking[Place7]] = PN[Place7](
+    \(P1) ~~> \(P2),
+    \(P2) ~~> \(P3),
+    \(P2) ~~> \(P4),
+    \(P3, P5) ~~> \(P5, P6),
+    \(P4, P5) ~~> \(P7) ^^^ \(P6),
+    \(P6) ~~> \(P1),
+    \(P7) ~~> \(P1, P5)
   )
 
   import Place3ME.*
-  def mutualExclusion: PetriNet[Place3ME] = PetriNet[Place3ME](
-    >(N) ~~> >(T),
-    >(T) ~~> >(C) ^^^ >(C),
-    >(C) ~~> >()
+  def mutualExclusion: System[Marking[Place3ME]] = PN[Place3ME](
+    \(N) ~~> \(T),
+    \(T) ~~> \(C) ^^^ \(C),
+    \(C) ~~> \()
   )
