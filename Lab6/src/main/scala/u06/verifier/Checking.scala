@@ -168,7 +168,7 @@ object Checking:
      *   true if the condition is satisfied, false otherwise.
      */
     infix def suchThat(condition: C => Boolean): Boolean = x(condition)
-  
+
   extension [T](x: Path[T])
     /**
      * Extension method to check if a [[Path]] has a marking that satisfies a condition.
