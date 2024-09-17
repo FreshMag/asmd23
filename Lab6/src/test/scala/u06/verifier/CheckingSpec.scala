@@ -8,7 +8,7 @@ import u06.verifier.PNChecking.*
 
 
 class CheckingSpec extends AnyFlatSpec with Matchers:
-  "A trivial uses of 'satisfies'" should "work as expected" in :
+  "Trivial uses of 'satisfies'" should "work as expected" in :
     import u06.verifier.util.PetriNets.Place3ME.*
 
     mutualExclusion satisfies true shouldBe true
