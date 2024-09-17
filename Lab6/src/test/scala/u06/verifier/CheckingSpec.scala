@@ -89,3 +89,16 @@ class CheckingSpec extends AnyFlatSpec with Matchers:
     readersAndWriters satisfies (reachable(\(P5)) from \(P1)) shouldBe false
     readersAndWriters satisfies (reachable(\(P6, P6)) from \(P1, P1, P5)) shouldBe true
     readersAndWriters satisfies (reachable(\(P6, P7)) from \(P1, P5)) shouldBe false // mutual exclusion
+
+  "The 'livenessL1' method" should "correctly assert if a certain transition has this property" in:
+    import u06.verifier.util.PetriNets.Place7.*
+    given Limit = 50
+    readersAndWriters satisfies (livenessL1(\(P6) ~~> \(P1)) from \(P1)) shouldBe false
+    readersAndWriters satisfies (livenessL1(\(P7) ~~> \(P1, P5)) from \(P1)) shouldBe false
+    readersAndWriters satisfies (livenessL1(\(P6) ~~> \(P1)) from \(P1, P5)) shouldBe true
+    readersAndWriters satisfies (livenessL1(\(P7) ~~> \(P1, P5)) from \(P1, P5)) shouldBe true
+    readersAndWriters satisfies (livenessL1(\(P1) ~~> \(P2)) from \(P1)) shouldBe true
+    readersAndWriters satisfies (livenessL1(\(P2) ~~> \(P3)) from \(P1)) shouldBe true
+    readersAndWriters satisfies (livenessL1(\(P2) ~~> \(P4)) from \(P1)) shouldBe true
+    readersAndWriters satisfies (livenessL1(\(P2) ~~> \(P5)) from \(P1, P2, P3, P4)) shouldBe false
+    readersAndWriters satisfies (livenessL1(\(P1) ~~> \(P4)) from \(P1, P2, P3)) shouldBe false
