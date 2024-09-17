@@ -1,9 +1,15 @@
 package u06.verifier
 
+
+/**
+ * Collection of methods to check properties on [[u06.modelling.System]]s and [[PetriNet]]s
+ */
 object Checking:
+  import u06.modelling.PetriNet.Trn
   import u06.verifier.PNChecking.hasTokens
   import u06.modelling.PetriNet.Marking
   import u06.modelling.SystemAnalysis.*
+  import u06.utils.MSet
   import u06.modelling.System
 
   /**
@@ -115,17 +121,34 @@ object Checking:
    *   the target state.
    * @param s
    *   the current system.
-   * @param l
-   *   the search limit.
    * @param countAsHaveReached
    *   the function to determine if the destination has been reached.
    * @return
    *   a function that checks if the startPoint can reach the destination.
    */
-  def reachable[T](destination: T)(using s: System[T])(using l: Limit)(using
+  def reachable[T](destination: T)(using s: System[T])(using Limit)(using
     countAsHaveReached: ReachedDef[T]
   ): T => Boolean =
     startPoint => E(path from startPoint).suchThat(_.hasMarkingThat(countAsHaveReached(destination)))
+
+  /**
+   * Checks whether a transition of the Petri net is L1-live (i.e. it is in some firing sequence)
+   * @param transition
+   *   transition to check.
+   * @param s
+   *   given [[System]]
+   * @tparam T
+   *   type of the [[Marking]] of this Petri net
+   * @return
+   *   a function that, given a [[Marking]], tells if the transition is L1-live starting from that marking
+   */
+  def livenessL1[T](transition: Trn[T])(using s: System[Marking[T]])(using Limit): Marking[T] => Boolean =
+    if s.next(transition.cond).contains(transition.eff) then
+      startPoint => (path from startPoint)(s).exists(_.sliding(2).filter(_.size == 2).exists:
+        case List(first, second) if hasTokens(transition.cond)(first) && hasTokens(transition.eff)(second) => true
+        case _ => false
+      )
+    else _ => false
 
   /**
    * Returns the paths from a given starting point in the system, up to a given limit.
