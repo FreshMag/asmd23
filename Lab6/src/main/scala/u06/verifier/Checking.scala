@@ -1,12 +1,11 @@
 package u06.verifier
 
-
 /**
- * Collection of methods to check properties on [[u06.modelling.System]]s and [[PetriNet]]s
+ * Collection of methods to check properties on [[u06.modelling.System]] s and [[PetriNet]] s
  */
 object Checking:
   import u06.modelling.PetriNet.Trn
-  import u06.verifier.PNChecking.hasTokens
+  import u06.verifier.PNChecking.{hasTokens, buildKarpMillerTree, containsOmegaMarking}
   import u06.modelling.PetriNet.Marking
   import u06.modelling.SystemAnalysis.*
   import u06.utils.MSet
@@ -149,6 +148,18 @@ object Checking:
         case _ => false
       )
     else _ => false
+
+  /**
+   * Checks if a given system is bounded using the Karp-Miller tree algorithm.
+   * @tparam T
+   *   the type of the system's state.
+   * @return
+   *   true if the system is bounded, false otherwise.
+   */
+  def bounded[T](using s: System[Marking[T]]): Marking[T] => Boolean =
+    initialMarking =>
+      val root = buildKarpMillerTree(s, initialMarking, Set.empty)
+      !containsOmegaMarking(root)
 
   /**
    * Returns the paths from a given starting point in the system, up to a given limit.

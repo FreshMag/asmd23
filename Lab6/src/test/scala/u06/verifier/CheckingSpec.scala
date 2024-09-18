@@ -102,3 +102,20 @@ class CheckingSpec extends AnyFlatSpec with Matchers:
     readersAndWriters satisfies (livenessL1(\(P2) ~~> \(P4)) from \(P1)) shouldBe true
     readersAndWriters satisfies (livenessL1(\(P2) ~~> \(P5)) from \(P1, P2, P3, P4)) shouldBe false
     readersAndWriters satisfies (livenessL1(\(P1) ~~> \(P4)) from \(P1, P2, P3)) shouldBe false
+
+  "The 'bounded' method" should "correctly assert if a Petri net is bounded given an initial marking" in:
+    import u06.verifier.util.PetriNets.Place7.*
+    import u06.verifier.util.PetriNets.Place3ME.*
+    readersAndWriters satisfies (bounded from \(P1)) shouldBe true
+    readersAndWriters satisfies (bounded from \(P1, P6)) shouldBe true
+    readersAndWriters satisfies (bounded from \(P1, P7)) shouldBe false
+    readersAndWriters satisfies (bounded from \(P1, P1, P1, P1, P2, P3)) shouldBe true
+    readersAndWriters satisfies (bounded from \(P1, P5)) shouldBe false
+    readersAndWriters satisfies (bounded from \(P2, P5)) shouldBe false
+    readersAndWriters satisfies (bounded from \(P3, P5)) shouldBe false
+    readersAndWriters satisfies (bounded from \(P4, P5)) shouldBe false
+
+    mutualExclusion satisfies (bounded from \(N)) shouldBe true
+    mutualExclusion satisfies (bounded from \(N, N, N)) shouldBe true
+    mutualExclusion satisfies (bounded from \(N, N, N, T, C, C)) shouldBe true
+
