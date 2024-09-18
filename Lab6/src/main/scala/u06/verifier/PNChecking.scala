@@ -6,8 +6,20 @@ object PNChecking:
   import u06.utils.MSet
   export KMTrees.{KMTree, buildKarpMillerTree, containsOmegaMarking}
 
-  def hasTokens[T](marking: Marking[T]): Marking[T] => Boolean =
-    m => (marking diff m).size == 0
+  /**
+   * Checks if a given marking [[markingThatShouldContainTokens]] contains all the tokens of marking
+   * [[markingWithTokens]].
+   * @param markingWithTokens
+   *   marking with the tokens to check
+   * @param markingThatShouldContainTokens
+   *   marking to check if it contains the requested tokens
+   * @tparam T
+   *   type of [[Marking]]
+   * @return
+   *   true if [[markingThatShouldContainTokens]] contains all the tokens of [[markingWithTokens]], false otherwise
+   */
+  def hasTokens[T](markingWithTokens: Marking[T])(markingThatShouldContainTokens: Marking[T]): Boolean =
+    (markingWithTokens diff markingThatShouldContainTokens).size == 0
 
   /**
    * Collection of useful methods to build and analyze Karp-Miller trees.
