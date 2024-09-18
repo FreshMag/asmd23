@@ -13,6 +13,7 @@ trait MSet[A] extends (A => Int):
   def size: Int
   infix def matches(m: MSet[A]): Boolean
   infix def extract(m: MSet[A]): Option[MSet[A]]
+  def map[B](f: ((A, Int)) => (B, Int)): MSet[B]
   def asList: List[A]
   def asMap: Map[A, Int]
   def iterator: Iterator[A]
@@ -29,7 +30,7 @@ object MSet:
   // Hidden reference implementation
   private case class MSetImpl[A](asMap: Map[A, Int]) extends MSet[A]:
     def this(list: List[A]) = this(list.groupBy(a => a).map((a, n) => (a, n.size)))
-    override val asList: List[A] =
+    override lazy val asList: List[A] =
       asMap.toList.flatMap((a, n) => List.fill(n)(a))
 
     override infix def apply(v1: A): Int = asMap.getOrElse(v1, 0)
@@ -40,5 +41,7 @@ object MSet:
     override infix def matches(m: MSet[A]): Boolean = extract(m).isDefined
     override infix def extract(m: MSet[A]): Option[MSet[A]] =
       Some(this diff m) filter (_.size == size - m.size)
+    override def map[B](f: ((A, Int)) => (B, Int)): MSet[B] = MSet.ofMap(asMap.map[B, Int](f))
     override def iterator: Iterator[A] = asMap.keysIterator
     override def toString = s"{${asList.mkString("|")}}"
+
