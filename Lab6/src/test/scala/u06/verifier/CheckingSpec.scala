@@ -81,7 +81,7 @@ class CheckingSpec extends AnyFlatSpec with Matchers:
     
   "The 'reachable' method" should "correctly determine whether a certain marking is reachable" in :
     import u06.verifier.util.PetriNets.Place7.*
-    import u06.verifier.Checking.given
+    import u06.verifier.Checking.markingReachedDefinition
 
     given Limit = 50
     readersAndWriters satisfies (reachable(\(P7)) from \(P1)) shouldBe false

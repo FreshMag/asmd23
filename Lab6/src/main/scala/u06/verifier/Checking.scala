@@ -19,14 +19,14 @@ object Checking:
   /**
    * A type alias for a sequence of paths through a system.
    * @tparam T
-   *   - the state or node type of the system.
+   *   the state or node type of the system.
    */
   type Paths[T] = Seq[Path[T]]
 
   /**
    * A type alias for a function that checks if one state has been "reached" from another.
    * @tparam T
-   *   - the state or node type of the system.
+   *   the state or node type of the system.
    */
   type ReachedDef[T] = T => T => Boolean
 
@@ -34,9 +34,17 @@ object Checking:
    * A given instance that defines how to determine if a marking (state) has been reached. Uses the hasTokens function
    * to check if a state has the required tokens.
    * @tparam T
-   *   - the type of tokens or markings used in the system.
+   *   the type of tokens or markings used in the system.
    */
   given markingReachedDefinition[T]: ReachedDef[Marking[T]] = hasTokens
+
+  /**
+   * A given instance that defines how to determine if a marking (state) has been "matched" (i.e., it is the same exact
+   * marking). It uses equality function to check if a state matches the exact tokens.
+   * @tparam T
+   *   the type of tokens or markings used in the system.
+   */
+  given markingMatchedDefinition[T]: ReachedDef[Marking[T]] = m1 => m2 => m1 == m2
 
   extension [T](x: System[T])
     /**
@@ -125,10 +133,10 @@ object Checking:
    * @return
    *   a function that checks if the startPoint can reach the destination.
    */
-  def reachable[T](destination: T)(using s: System[T])(using Limit)(using
+  def reachable[T](destination: T)(startPoint: T)(using s: System[T])(using Limit)(using
     countAsHaveReached: ReachedDef[T]
-  ): T => Boolean =
-    startPoint => E(path from startPoint).suchThat(_.hasMarkingThat(countAsHaveReached(destination)))
+  ): Boolean =
+    E(path from startPoint).suchThat(_.hasMarkingThat(countAsHaveReached(destination)))
 
   /**
    * Checks whether a transition of the Petri net is L1-live (i.e. it is in some firing sequence)
@@ -141,13 +149,13 @@ object Checking:
    * @return
    *   a function that, given a [[Marking]], tells if the transition is L1-live starting from that marking
    */
-  def livenessL1[T](transition: Trn[T])(using s: System[Marking[T]])(using Limit): Marking[T] => Boolean =
+  def livenessL1[T](transition: Trn[T])(startPoint: Marking[T])(using s: System[Marking[T]])(using Limit): Boolean =
     if s.next(transition.cond).contains(transition.eff) then
-      startPoint => (path from startPoint)(s).exists(_.sliding(2).filter(_.size == 2).exists:
+      (path from startPoint)(s).exists(_.sliding(2).filter(_.size == 2).exists:
         case List(first, second) if hasTokens(transition.cond)(first) && hasTokens(transition.eff)(second) => true
         case _ => false
       )
-    else _ => false
+    else false
 
   /**
    * Checks if a given system is bounded using the Karp-Miller tree algorithm.
@@ -156,10 +164,9 @@ object Checking:
    * @return
    *   true if the system is bounded, false otherwise.
    */
-  def bounded[T](using s: System[Marking[T]]): Marking[T] => Boolean =
-    initialMarking =>
-      val root = buildKarpMillerTree(s, initialMarking, Set.empty)
-      !containsOmegaMarking(root)
+  def bounded[T](using s: System[Marking[T]])(startPoint: Marking[T]): Boolean =
+    val root = buildKarpMillerTree(s, startPoint, Set.empty)
+    !containsOmegaMarking(root)
 
   /**
    * Returns the paths from a given starting point in the system, up to a given limit.
