@@ -12,14 +12,14 @@ object StochasticMutualExclusion extends App:
   export u07.modelling.CTMCSimulation.*
   export u07.modelling.SPN.*
   
-  val spn = SPN[Place3ME](
+  def spn = SPN[Place3ME](
     \(N) ~~ (_ => 1.0) ~~> \(T),
     \(T) ~~ (m => m(T)) ~~> \(C) ^^^ \(C),
     \(C) ~~ (_ => 2.0) ~~>  \()
   )
 
-  println:
-    toCTMC(spn).newSimulationTrace(\(N,N,N,N), new Random)
-      .take(20)
-      .toList.mkString("\n")
+//  println:
+//    toCTMC(spn).newSimulationTrace(\(N,N,N,N), new Random)
+//      .take(20)
+//      .toList.mkString("\n")
 
