@@ -1,12 +1,13 @@
 package u07.simulation.facade
 
 import org.jfree.chart.plot.CategoryPlot
+import org.jfree.chart.renderer.category.{AbstractCategoryItemRenderer, LineAndShapeRenderer, StatisticalBarRenderer}
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
 import org.jfree.chart.ui.RectangleInsets
 import org.jfree.chart.{ChartFactory, ChartPanel, JFreeChart}
 import org.jfree.data.category.DefaultCategoryDataset
 
-import java.awt.{Color, Dimension}
+import java.awt.{BasicStroke, Color}
 import javax.swing.JPanel
 
 /**
@@ -25,8 +26,8 @@ object LineChart2D:
    * @return
    *   an empty [[LineChart2D]]
    */
-  def create(title: String = "", xAxisTitle: String = "", yAxisTitle: String = ""): LineChart2D =
-    LineChart2D(title, xAxisTitle, yAxisTitle)
+  def create(title: String = "", xAxisTitle: String = "", yAxisTitle: String = "", rowLabels: Iterable[String] = Seq()): LineChart2D =
+    LineChart2D(title, xAxisTitle, yAxisTitle, rowLabels)
 
 /**
  * Line chart as a [[JPanel]] using the [[org.jfree]] chart library.
@@ -37,13 +38,12 @@ object LineChart2D:
  * @param yAxisTitle
  *   label of the y-axis
  */
-class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String):
+class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String, rowLabels: Iterable[String]):
   private val dataset = new DefaultCategoryDataset()
   private val chart = createChart
   private val panel = new ChartPanel(chart, false)
   panel.setFillZoomRectangle(true)
-  panel.setMouseWheelEnabled(true)
-  panel.setPreferredSize(new Dimension(500, 500))
+  panel.setMouseWheelEnabled(false)
 
   /**
    * Returns this chart as a JPanel
@@ -80,13 +80,5 @@ class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String
     plot.setAxisOffset(new RectangleInsets(1.0, 1.0, 1.0, 1.0))
     plot.setDomainCrosshairVisible(true)
     plot.setRangeCrosshairVisible(true)
-
-    val r = plot.getRenderer
-    r match
-      case renderer: XYLineAndShapeRenderer =>
-        renderer.setDefaultShapesVisible(true)
-        renderer.setDefaultShapesFilled(true)
-        renderer.setDrawSeriesLineAsPath(true)
-      case _ =>
 
     chart

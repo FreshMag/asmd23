@@ -1,5 +1,6 @@
 package u07.simulation
 
+import u04.monads.Monads.Monad.{seq, seqN}
 import u04.monads.States.State
 import u07.simulation.facade.SwingFunctionalFacade.{Frame, createFrame}
 
@@ -11,8 +12,9 @@ object SPNView:
 
     def initialWindow: Window
     def setSize(width: Int, height: Int): State[Window, Unit]
-    def addChartView(title: String, xLabel: String, yLabel: String): State[Window, Unit]
+    def addChartView(title: String, xLabel: String, yLabel: String, rowLabels: Iterable[String]): State[Window, Unit]
     def addChartValue(x: Double, y: Double, rowKey: String): State[Window, Unit]
+    def addChartValues(values: Map[String, Double], x: Double): State[Window, Unit]
     def show(): State[Window, Unit]
     def nop(): State[Window, Unit]
 
@@ -27,12 +29,16 @@ object SPNView:
     def setSize(width: Int, height: Int): State[Window, Unit] =
       State(w => (w.setSize(width, height), {}))
 
-    def addChartView(title: String, xLabel: String, yLabel: String): State[Window, Unit] =
-      State(w => (w.createChart(title, xLabel, yLabel), ()))
+    def addChartView(title: String, xLabel: String, yLabel: String, rowLabels: Iterable[String]): State[Window, Unit] =
+      State(w => (w.createChart(title, xLabel, yLabel, rowLabels), ()))
 
     override def addChartValue(x: Double, y: Double, rowKey: String): State[Frame, Unit] =
       State(w => (w.addChartValue(x, y, rowKey), ()))
 
+    override def addChartValues(values: Map[String, Double], x: Double): State[Frame, Unit] =
+      State(w => (w.addChartValues(values, x), ()))
+    
+  
     def show(): State[Window, Unit] =
       State(w => (w.show(), ()))
 

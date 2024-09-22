@@ -9,20 +9,47 @@ import u07.simulation.SPNView.WindowStateImpl.*
 
 object ChartSimulationApp:
 
-  def windowCreation(width: Int, height: Int): State[Window, LazyList[String]] =
+  def windowCreation(
+    width: Int,
+    height: Int,
+    title: String,
+    xLabel: String,
+    yLabel: String,
+    rowLabels: Iterable[String]
+  ): State[Window, LazyList[String]] =
     for
       _ <- setSize(width, height)
-      _ <- addChartView()
+      _ <- addChartView(title, xLabel, yLabel, rowLabels)
       _ <- show()
       events <- eventStream()
     yield events
 
 object MutualExclusionController extends SPNController.ControllerImpl[Place3ME](SPNModel.SPNModelImplME) with App:
 
-  val controller =
+  private val controller =
     for
-      events <- mv(model.nop(), _ => ChartSimulationApp.windowCreation(500, 500))
-      _ <- gameLoop(events, model.update(), _ => nop(), 1.5)
+      events <- mv(
+        model.nop(),
+        _ =>
+          ChartSimulationApp.windowCreation(
+            1024,
+            720,
+            "Mutual exclusion",
+            "Time",
+            "Tokens",
+            Place3ME.values.map(_.toString)
+          )
+      )
+      _ <- gameLoop(
+        events,
+        model.update(),
+        event =>
+          addChartValues(
+            event.state.asMap.map({ case (place, value) => (place.toString, value.toDouble) }),
+            event.time
+          ),
+        1.5
+      )
     yield ()
 
   controller.run((initialState(\(N, N, N)), initialWindow))

@@ -34,7 +34,7 @@ object SPNController:
 
     import scala.concurrent.duration.DurationDouble
 
-    private val minDeltaTime: FiniteDuration = 10.millis
+    private val minDeltaTime: FiniteDuration = 20.millis
 
     override def gameLoop(events: LazyList[this.Event], 
                           updateM: State[this.Model, this.ModelOut], 
