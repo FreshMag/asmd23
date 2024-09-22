@@ -1,13 +1,9 @@
-package u07.simulation;
+package u07.simulation.facade
 
-import u04.mvc.engineer.SwingCustomComponents
-
-import javax.swing.*
-import javax.swing.WindowConstants.EXIT_ON_CLOSE
 import java.awt.*
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.function.Supplier
-import scala.collection.mutable
+import javax.swing.*
+import javax.swing.WindowConstants.EXIT_ON_CLOSE
 import scala.util.Try
 
 object SwingFunctionalFacade:
@@ -16,7 +12,8 @@ object SwingFunctionalFacade:
 
   trait Frame:
     def setSize(width: Int, height: Int): Frame
-    def addPanel(panel: JPanel, name: String): Frame
+    def createChart(title: String, xLabel: String, yLabel: String): Frame
+    def addChartValue(x: Double, y: Double, rowKey: String): Frame
     def schedule(millis: Int, eventName: String): Frame
     def show(): Frame
     def events(): () => String
@@ -24,7 +21,7 @@ object SwingFunctionalFacade:
 
   class FrameImpl extends Frame:
     private val jFrame: JFrame = new JFrame()
-    private val jPanels: mutable.Map[String, JPanel] = mutable.Map()
+    private var jChart: LineChart2D = LineChart2D.create()
     private val eventQueue: LinkedBlockingQueue[String] = new LinkedBlockingQueue()
     override def events(): () => String = () =>
       Try:
@@ -38,20 +35,23 @@ object SwingFunctionalFacade:
       this.jFrame.setSize(width, height)
       this
 
-    override def addPanel(panel: JPanel, name: String): Frame =
-      panel.setPreferredSize(this.jFrame.getSize());
-      panel.setBackground(Color.BLACK);
-      this.jFrame.add(panel);
-      this.jPanels += (name -> panel);
+    override def createChart(title: String, xLabel: String, yLabel: String): Frame =
+      jChart = LineChart2D.create(title, xLabel, yLabel)
+      jFrame.setContentPane(jChart.asJPanel)
+      jFrame.pack()
       this
 
-    def schedule(millis: Int, eventName: String): Frame = 
+    override def addChartValue(x: Double, y: Double, rowKey: String): Frame =
+      jChart.addValue(x, y, rowKey)
+      this
+
+    override def schedule(millis: Int, eventName: String): Frame =
       val timer = new Timer(millis, _ => Try(eventQueue.put(eventName)))
       timer.setRepeats(false)
       timer.start()
       this
       
-    def show(): Frame = 
+    override def show(): Frame =
       jFrame.setVisible(true)
       this
 
