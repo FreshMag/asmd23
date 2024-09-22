@@ -12,6 +12,7 @@ object SPNView:
     def addChartView(title: String, xLabel: String, yLabel: String, rowLabels: Iterable[String]): State[Window, Unit]
     def addChartValue(x: Double, y: Double, rowKey: String): State[Window, Unit]
     def addChartValues(values: Map[String, Double], x: Double): State[Window, Unit]
+    def addButton(text: String, name: String): State[Window, Unit]
     def show(): State[Window, Unit]
     def nop(): State[Window, Unit]
 
@@ -34,8 +35,10 @@ object SPNView:
 
     override def addChartValues(values: Map[String, Double], x: Double): State[Frame, Unit] =
       State(w => (w.addChartValues(values, x), ()))
-    
-  
+
+    override def addButton(text: String, name: String): State[Frame, Unit] =
+      State(w => (w.addButton(text, name), ()))
+
     def show(): State[Window, Unit] =
       State(w => (w.show(), ()))
 

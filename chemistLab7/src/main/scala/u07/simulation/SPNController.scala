@@ -4,8 +4,6 @@ import u04.monads.Monads.*
 import u04.monads.Monads.Monad.*
 import u04.monads.States.State
 import u04.monads.States.State.*
-import u07.modelling.CTMCSimulation
-import u07.modelling.SPN.Marking
 import u07.simulation.SPNView.WindowStateImpl.Window
 
 import scala.collection.immutable.LazyList
@@ -46,6 +44,7 @@ object SPNController:
         _ <- seqN(events.map:
           case "Loop" => mv(updateM, event => seq(updateV(event),
             loop(minDeltaTime.max((event.deltaTime * timeFactor).seconds))))
+          case _ => nop()
         )
       yield ()
 
@@ -58,3 +57,5 @@ object SPNController:
 
     private def loop(period: FiniteDuration): State[this.View, Unit] =
       State(w => (w.schedule(period.toMillis.toInt, "Loop"), ()))
+      
+    def nop(): State[(model.System, Window), Unit] = mv(model.nop(), _ => SPNView.WindowStateImpl.nop())
