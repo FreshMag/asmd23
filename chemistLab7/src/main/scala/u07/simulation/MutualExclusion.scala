@@ -15,11 +15,13 @@ object ChartSimulationApp:
     title: String,
     xLabel: String,
     yLabel: String,
-    rowLabels: Iterable[String]
+    rowLabels: Iterable[String],
+    chartInitialSetup: Map[String, Double]
   ): State[Window, LazyList[String]] =
     for
       _ <- setSize(width, height)
       _ <- addChartView(title, xLabel, yLabel, rowLabels)
+      _ <- addChartValues(chartInitialSetup, 0)
       _ <- show()
       events <- eventStream()
     yield events
@@ -29,15 +31,16 @@ object MutualExclusionController extends SPNController.ControllerImpl[Place3ME](
   private val controller =
     for
       events <- mv(
-        model.nop(),
-        _ =>
+        model.get(),
+        (spn: model.SPN, _) =>
           ChartSimulationApp.windowCreation(
             1024,
             720,
             "Mutual exclusion",
             "Time",
             "Tokens",
-            Place3ME.values.map(_.toString)
+            Place3ME.values.map(_.toString),
+            spn.head.state.asMap.map(m => (m._1.toString, m._2.toDouble))
           )
       )
       _ <- gameLoop(

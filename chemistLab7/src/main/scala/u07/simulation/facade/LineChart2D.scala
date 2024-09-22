@@ -10,6 +10,7 @@ import org.jfree.data.xy.{XYSeries, XYSeriesCollection}
 
 import java.awt.{BasicStroke, Color}
 import javax.swing.JPanel
+import scala.util.Try
 
 /**
  * Object to help with the construction of a [[LineChart2D]]
@@ -47,7 +48,7 @@ object LineChart2D:
 class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String, rowLabels: Iterable[String]):
   private val lineThickness = 4.0f
 
-  private val dataset = initDataset
+  private val dataset = new XYSeriesCollection()
   private val chart = createChart
   private val panel = new ChartPanel(chart, false)
   panel.setFillZoomRectangle(true)
@@ -71,15 +72,10 @@ class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String
    */
   def addValue(x: Double, y: Double, row: Comparable[?]): Unit =
     this.synchronized:
-      dataset.getSeries(row).add(x, y)
-
-  private def initDataset: XYSeriesCollection =
-    val dataset = new XYSeriesCollection()
-    rowLabels.foreach: label =>
-      val series = new XYSeries(label)
-      series.add(0,0)
-      dataset.addSeries(series)
-    dataset
+      Try(dataset.getSeries(row).add(x, y)).getOrElse:
+        val series = new XYSeries(row)
+        series.add(x, y)
+        dataset.addSeries(series)
 
   /**
    * Creates a line chart.

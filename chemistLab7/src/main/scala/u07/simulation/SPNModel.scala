@@ -18,6 +18,7 @@ object SPNModel:
     type System = (SPN, Time)
     type SystemUpdate
     def update(): State[System, SystemUpdate]
+    def get(): State[System, System]
     def nop(): State[System, Unit]
 
   class SPNModelImpl[T] extends SPNModel[T]:
@@ -37,6 +38,9 @@ object SPNModel:
       )
 
     override def nop(): State[System, Unit] = State(system => (system, ()))
+
+    override def get(): State[(Trace[Marking[T]], Double), (Trace[Marking[T]], Double)] =
+      State(s => (s, s))
 
   object SPNModelImplME extends SPNModelImpl[Place3ME]:
     def initialState(initialMarking: Marking[Place3ME]): System =
