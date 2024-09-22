@@ -1,10 +1,7 @@
 package u07.simulation
 
-import u04.monads.Monads.Monad.{seq, seqN}
 import u04.monads.States.State
 import u07.simulation.facade.SwingFunctionalFacade.{Frame, createFrame}
-
-import javax.swing.JPanel
 
 object SPNView:
   trait WindowState:

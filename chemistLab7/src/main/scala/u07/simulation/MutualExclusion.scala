@@ -46,7 +46,7 @@ object MutualExclusionController extends SPNController.ControllerImpl[Place3ME](
         event =>
           addChartValues(
             event.state.asMap.map({ case (place, value) => (place.toString, value.toDouble) }),
-            event.time
+            event.absoluteTime
           ),
         1.5
       )

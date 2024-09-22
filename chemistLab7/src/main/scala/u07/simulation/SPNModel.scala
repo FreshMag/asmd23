@@ -16,21 +16,24 @@ object SPNModel:
     type SPN
     type Time
     type System = (SPN, Time)
-    type SystemEvent
-    def update(): State[System, SystemEvent]
+    type SystemUpdate
+    def update(): State[System, SystemUpdate]
     def nop(): State[System, Unit]
 
   class SPNModelImpl[T] extends SPNModel[T]:
+    
     override type SPN = Trace[Marking[T]]
     override type Time = Double
-    override type SystemEvent = Event[Marking[T]]
     
-    override def update(): State[System, Event[Marking[T]]] =
+    case class SimulationStep(state: Marking[T], deltaTime: Double, absoluteTime: Double)
+    override type SystemUpdate = SimulationStep
+    
+    override def update(): State[System, SimulationStep] =
       State((spn: SPN, time: Time) =>
         val nextEvent = spn.head
         val newTrace = spn.drop(1)
         println(Event(nextEvent.time - time, nextEvent.state))
-        ((newTrace, nextEvent.time), Event(nextEvent.time - time, nextEvent.state))
+        ((newTrace, nextEvent.time), SimulationStep(nextEvent.state, nextEvent.time - time, nextEvent.time))
       )
 
     override def nop(): State[System, Unit] = State(system => (system, ()))

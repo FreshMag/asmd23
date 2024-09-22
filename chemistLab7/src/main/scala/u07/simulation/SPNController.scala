@@ -30,7 +30,7 @@ object SPNController:
     override type View = Window
     override type Model = model.System
     override type Event = String
-    override type ModelOut = CTMCSimulation.Event[Marking[T]]
+    override type ModelOut = model.SystemUpdate
 
     import scala.concurrent.duration.DurationDouble
 
@@ -42,10 +42,10 @@ object SPNController:
                           timeFactor: Double
     ): State[(model.System, Window), Unit] =
       for
-        _ <- mv(updateM, event => loop(event.time.seconds))
+        _ <- mv(updateM, event => loop(event.deltaTime.seconds))
         _ <- seqN(events.map:
           case "Loop" => mv(updateM, event => seq(updateV(event),
-            loop(minDeltaTime.max((event.time * timeFactor).seconds))))
+            loop(minDeltaTime.max((event.deltaTime * timeFactor).seconds))))
         )
       yield ()
 
