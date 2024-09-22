@@ -1,7 +1,7 @@
 package u07.simulation
 
 import u04.monads.States.State
-import u07.simulation.SwingFunctionalFacade.{Frame, createFrame}
+import u07.simulation.facade.SwingFunctionalFacade.{Frame, createFrame}
 
 import javax.swing.JPanel
 
@@ -11,14 +11,15 @@ object SPNView:
 
     def initialWindow: Window
     def setSize(width: Int, height: Int): State[Window, Unit]
-    def addChartView(): State[Window, Unit]
+    def addChartView(title: String, xLabel: String, yLabel: String): State[Window, Unit]
+    def addChartValue(x: Double, y: Double, rowKey: String): State[Window, Unit]
     def show(): State[Window, Unit]
     def nop(): State[Window, Unit]
 
     def eventStream(): State[Window, LazyList[String]]
 
   object WindowStateImpl extends WindowState:
-    
+
     type Window = Frame
 
     def initialWindow: Window = createFrame()
@@ -26,9 +27,12 @@ object SPNView:
     def setSize(width: Int, height: Int): State[Window, Unit] =
       State(w => (w.setSize(width, height), {}))
 
-    def addChartView(): State[Window, Unit] =
-      State(w => (w.addPanel(new JPanel(), "ball-view"), ()))
-    
+    def addChartView(title: String, xLabel: String, yLabel: String): State[Window, Unit] =
+      State(w => (w.createChart(title, xLabel, yLabel), ()))
+
+    override def addChartValue(x: Double, y: Double, rowKey: String): State[Frame, Unit] =
+      State(w => (w.addChartValue(x, y, rowKey), ()))
+
     def show(): State[Window, Unit] =
       State(w => (w.show(), ()))
 
@@ -36,5 +40,3 @@ object SPNView:
       State(w => (w, LazyList.continually(w.events()())))
 
     override def nop(): State[Frame, Unit] = State(w => (w, ()))
-      
-      
