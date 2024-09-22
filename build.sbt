@@ -30,7 +30,8 @@ lazy val verifierLab6 = project
 lazy val chemistLab7 = project
   .settings(
     name := "chemistLab7",
-    libraryDependencies ++= commonDependencies
+    libraryDependencies ++= commonDependencies ++
+      Seq(dependencies.jFreeChart)
   )
   .dependsOn(
     mvcEngineerLab4,
@@ -47,11 +48,17 @@ lazy val dependencies =
     val scalatestV = "3.2.18"
     val junitV = "4.13.2"
     val scalacheckV = "1.18.1"
+    val jFreeChartV = "1.5.5"
+    //val jChart3dV = "2.1.0"
+    //val jSvgV = "3.4.3"
 
     val junitInterface = "com.github.sbt" % "junit-interface" % junitInterfaceV
     val scalatest = "org.scalatest" %% "scalatest" % scalatestV
     val junit = "junit" % "junit" % junitV
     val scalacheck = "org.scalacheck" %% "scalacheck" % scalacheckV
+    val jFreeChart = "org.jfree" % "jfreechart" % jFreeChartV
+    //val jChart3d = "org.jfree" % "org.jfree.chart3d" % jChart3dV
+    //val jSvg = "org.jfree" % "jfreesvg" % jSvgV
   }
 
 lazy val commonDependencies = Seq(
