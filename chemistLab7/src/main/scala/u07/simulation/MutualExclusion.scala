@@ -1,6 +1,5 @@
 package u07.simulation
 
-import u04.monads.Monads.Monad.seqN
 import u04.monads.States.State
 import u06.verifier.util.PetriNets.Place3ME
 import u06.verifier.util.PetriNets.Place3ME.*
@@ -21,7 +20,7 @@ object ChartSimulationApp:
   ): State[Window, LazyList[String]] =
     for
       _ <- setSize(width, height)
-      _ <- addButton("Start", "StartSimulation")
+      _ <- addButton("Start", "Loop")
       _ <- addChartView(title, xLabel, yLabel, rowLabels)
       _ <- addChartValues(chartInitialSetup, 0)
       _ <- show()
@@ -34,7 +33,7 @@ object MutualExclusionController extends SPNController.ControllerImpl[Place3ME](
     for
       events <- mv(
         model.get(),
-        (spn: model.SPN, _) =>
+        spn =>
           ChartSimulationApp.windowCreation(
             1024,
             720,
@@ -45,20 +44,16 @@ object MutualExclusionController extends SPNController.ControllerImpl[Place3ME](
             spn.head.state.asMap.map(m => (m._1.toString, m._2.toDouble))
           )
       )
-      _ <- seqN(events.map:
-        case "StartSimulation" => gameLoop(
-          events,
-          model.update(),
-          event =>
-            addChartValues(
-              event.state.asMap.map({ case (place, value) => (place.toString, value.toDouble) }),
-              event.absoluteTime
-            ),
-          timeFactor
-        )
-        case _ => nop()
+      _ <- gameLoop(
+        events,
+        model.update(),
+        event =>
+          addChartValues(
+            event.state.asMap.map({ case (place, value) => (place.toString, value.toDouble) }),
+            event.absoluteTime
+          ),
+        timeFactor
       )
-      
     yield ()
 
   controller.run((initialState(\(N, N, N)), initialWindow))

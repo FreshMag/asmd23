@@ -26,7 +26,7 @@ object SPNController:
 
   class ControllerImpl[T](val model: SPNModel.SPNModelImpl[T]) extends Controller:
     override type View = Window
-    override type Model = model.System
+    override type Model = model.SPN
     override type Event = String
     override type ModelOut = model.SystemUpdate
 
@@ -34,13 +34,12 @@ object SPNController:
 
     private val minDeltaTime: FiniteDuration = 20.millis
 
-    override def gameLoop(events: LazyList[this.Event], 
-                          updateM: State[this.Model, this.ModelOut], 
+    override def gameLoop(events: LazyList[this.Event],
+                          updateM: State[this.Model, this.ModelOut],
                           updateV: this.ModelOut => State[this.View, Unit],
                           timeFactor: Double
-    ): State[(model.System, Window), Unit] =
+    ): State[(model.SPN, Window), Unit] =
       for
-        _ <- mv(updateM, event => loop(event.deltaTime.seconds))
         _ <- seqN(events.map:
           case "Loop" => mv(updateM, event => seq(updateV(event),
             loop(minDeltaTime.max((event.deltaTime * timeFactor).seconds))))
@@ -57,5 +56,5 @@ object SPNController:
 
     private def loop(period: FiniteDuration): State[this.View, Unit] =
       State(w => (w.schedule(period.toMillis.toInt, "Loop"), ()))
-      
-    def nop(): State[(model.System, Window), Unit] = mv(model.nop(), _ => SPNView.WindowStateImpl.nop())
+
+    def nop(): State[(model.SPN, Window), Unit] = mv(model.nop(), _ => SPNView.WindowStateImpl.nop())

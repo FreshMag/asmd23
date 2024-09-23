@@ -49,7 +49,6 @@ object SwingFunctionalFacade:
       jb.addActionListener(_ => Try(eventQueue.put(name)))
       this.content.add(jb)
       this
-            
 
     override def addChartValue(x: Double, y: Double, rowKey: String): Frame =
       jChart.addValue(x, y, rowKey)
