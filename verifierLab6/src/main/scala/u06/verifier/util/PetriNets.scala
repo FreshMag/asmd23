@@ -32,7 +32,7 @@ object PetriNets:
   enum PlaceRW:
     case P1, P2, P3, P4, Lock, Reading, Writing
 
-  enum PlaceBrussellator:
+  enum PlaceBrusselator:
     case A, B, X, Y, D, E
 
   def \[A](l: A*): MSet[A] = MSet(l*)

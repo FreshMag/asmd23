@@ -3,6 +3,8 @@
  */
 package u06.utils
 
+import scala.annotation.targetName
+
 /**
  * A multiset datatype
  */
@@ -45,3 +47,10 @@ object MSet:
     override def iterator: Iterator[A] = asMap.keysIterator
     override def toString = s"{${asList.mkString("|")}}"
 
+  extension[T] (self: MSet[T])
+    @targetName("add")
+    def +(other: MSet[T]): MSet[T] = self union other
+  
+  extension (times: Int)
+    @targetName("times")
+    def *[T](set: MSet[T]): MSet[T] = new MSetImpl(set.asMap.toList.flatMap((a, n) => List.fill(n*times)(a)))
