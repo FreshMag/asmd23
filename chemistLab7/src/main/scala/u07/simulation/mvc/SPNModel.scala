@@ -31,7 +31,6 @@ object SPNModel:
         val currentEvent = spn.head
         val newTrace = spn.drop(1)
         val nextEvent = newTrace.head
-        println(s"Event(${currentEvent.time}, ${currentEvent.state}) ---> Event(${nextEvent.time}, ${nextEvent.state})")
         (
           newTrace,
           SimulationStep(currentEvent.state, (nextEvent.time - currentEvent.time).max(0), currentEvent.time)
@@ -45,7 +44,7 @@ object SPNModel:
 
   object SPNModelImplME extends SPNModelImpl[Place3ME]:
     import u07.modelling.util.SPNs.mutualExclusion
-    
+
     def initialState(initialMarking: Marking[Place3ME]): SPN =
       val spn = toCTMC(mutualExclusion)
       spn.newSimulationTrace(initialMarking, new Random)

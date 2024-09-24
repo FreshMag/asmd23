@@ -1,9 +1,5 @@
 package u07.simulation
 
-import u07.modelling.SPN.toCTMC
-
-import java.util.Random
-
 object SPNSimulation:
   import u07.simulation.mvc.SPNView.WindowStateImpl.*
   import u07.simulation.mvc.SPNModel.SPNModelImplME.*
@@ -13,8 +9,11 @@ object SPNSimulation:
   import u07.modelling.SPN.Marking
   import u07.modelling.SPN.SPN
   import u07.modelling.CTMCSimulation.newSimulationTrace
+  import u07.modelling.SPN.toCTMC
 
-  object ChartSimulationApp:
+  import java.util.Random
+
+  private object ChartSimulationApp:
 
     def windowCreation(
       width: Int,
@@ -44,37 +43,50 @@ object SPNSimulation:
     yLabel: String = "Tokens",
     windowWidth: Int = 1024,
     windowHeight: Int = 720,
-    timeFactor: Double = 1.0
+    timeFactor: Double = 1.0,
+    debugPrints: Boolean = false
   ) extends ControllerImpl[T](new SPNModelImpl[T]) with App:
 
+
+    private def printStepConsole(step: ModelOut): Unit =
+      println(s"---> Delta Time: ${step.deltaTime}, Transition to: ${step.state})")
+
+    private def init: State[(model.SPN, Window), LazyList[Event]] =
+      mv(
+        model.get(),
+        spn =>
+          ChartSimulationApp.windowCreation(
+            windowWidth,
+            windowHeight,
+            title,
+            xLabel,
+            yLabel,
+            places.toSet.diff(placesToHide).map(_.toString),
+            spn.head.state.asMap.map:
+              case (place, count) => (place.toString, count.toDouble)
+          )
+      )
+
+    private def createLoop(events: LazyList[Event]): State[(model.SPN, Window), Unit] =
+      gameLoop(
+        events,
+        model.update(),
+        event =>
+          if debugPrints then printStepConsole(event)
+          addChartValues(
+            event.state.asMap
+              .filter((place, _) => !placesToHide.contains(place))
+              .map({ case (place, value) => (place.toString, value.toDouble) }),
+            event.absoluteTime
+          ),
+        timeFactor
+      )
+      
+    
     private val controller =
       for
-        events <- mv(
-          model.get(),
-          spn =>
-            ChartSimulationApp.windowCreation(
-              windowWidth,
-              windowHeight,
-              title,
-              xLabel,
-              yLabel,
-              places.toSet.diff(placesToHide).map(_.toString),
-              spn.head.state.asMap.map:
-                case (place, count) => (place.toString, count.toDouble)
-            )
-        )
-        _ <- gameLoop(
-          events,
-          model.update(),
-          event =>
-            addChartValues(
-              event.state.asMap
-                .filter((place, _) => !placesToHide.contains(place))
-                .map({ case (place, value) => (place.toString, value.toDouble) }),
-              event.absoluteTime
-            ),
-          timeFactor
-        )
+        events <- init
+        _ <- createLoop(events)
       yield ()
 
     private val initialState = toCTMC(spn).newSimulationTrace(initialMarking, new Random)

@@ -14,11 +14,12 @@ object MutualExclusionSimulation extends SPNSimulation(
   title = "Mutual Exclusion",
 )
 
-object ReadersAndWriters extends SPNSimulation(
+object ReadersAndWritersSimulation extends SPNSimulation(
   spn = readersAndWriters,
   places = PlaceRW.values,
   initialMarking = \(P1, P1, P1, P1, P1, P1, P1, P1, P1, P1, P1, P1, Lock),
   placesToHide = Set(P1, P2, P3, P4, Lock),
   title = "Readers and Writers",
-  timeFactor = 0.5
+  timeFactor = 0.5,
+  debugPrints = true
 )
