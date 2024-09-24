@@ -1,14 +1,15 @@
 package u07.simulation
 
-import org.jfree.data.xy.XYSeriesCollection
-import u06.utils.MSet
-import u07.simulation.facade.SwingFunctionalFacade
-
 object SPNVisualization:
 
   import u07.modelling.CTMCSimulation.newSimulationTrace
   import u07.modelling.SPN.{Marking, SPN, toCTMC}
   import u07.simulation.mvc.SPNView.WindowStateImpl.*
+  import org.jfree.data.xy.XYSeriesCollection
+  import u06.utils.MSet
+  import u07.simulation.facade.SwingFunctionalFacade
+  import u07.simulation.facade.SwingFunctionalFacade.Frame
+  import u07.simulation.utils.SPNUtils
 
   import java.util.Random
 
@@ -25,17 +26,15 @@ object SPNVisualization:
     windowHeight: Int = 720
   ) extends App:
 
+    private def initFrame: Frame = SwingFunctionalFacade.createFrame()
+      .setSize(windowWidth, windowHeight)
+      .createChartWithDataset(title, xLabel, yLabel, placesToTrack.map(_.toString), dataset)
+
     private val trace = toCTMC(spn).newSimulationTrace(initialMarking, new Random).take(simulationLength)
     private val placesToTrack = places.toSet.diff(placesToHide)
     private val dataset = new XYSeriesCollection()
-    private val frame = SwingFunctionalFacade.createFrame()
-      .setSize(windowWidth, windowHeight)
-      .createChartWithDataset(title, xLabel, yLabel, placesToTrack.map(_.toString), dataset)
+    private val frame = initFrame
+
     trace.foreach: event =>
-      frame.addChartValues(
-        event.state.asMap
-          .filter((place, _) => !placesToHide.contains(place))
-          .map({ case (place, value) => (place.toString, value.toDouble) }),
-        event.time
-      )
+      frame.addChartValues(SPNUtils.eventStateToChartValues(event.state.asMap, placesToHide), event.time)
     frame.show()
