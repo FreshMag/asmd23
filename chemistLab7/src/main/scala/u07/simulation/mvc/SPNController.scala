@@ -1,15 +1,15 @@
 package u07.simulation.mvc
 
-import u04.monads.Monads.*
-import u04.monads.Monads.Monad.*
-import u04.monads.States.State
-import u04.monads.States.State.*
-import u07.simulation.mvc.SPNView.WindowStateImpl.Window
-
-import scala.collection.immutable.LazyList
-import scala.concurrent.duration.FiniteDuration
-
 object SPNController:
+  import u04.monads.Monads.*
+  import u04.monads.Monads.Monad.*
+  import u04.monads.States.State
+  import u04.monads.States.State.*
+  import u07.simulation.mvc.SPNView.WindowStateImpl.Window
+  import u07.simulation.utils.SPNUtils.*
+
+  import scala.collection.immutable.LazyList
+  import scala.concurrent.duration.FiniteDuration
 
   trait Controller:
     type View
@@ -17,19 +17,12 @@ object SPNController:
     type ModelOut
     type Event
 
-    def gameLoop(
+    def eventDrivenLoop(
       events: LazyList[Event],
       updateM: State[Model, ModelOut],
       updateV: ModelOut => State[View, Unit],
       timeFactor: Double
     ): State[(Model, View), Unit]
-
-  def mv[SM, SV, AM, AV](m1: State[SM, AM], f: AM => State[SV, AV]): State[(SM, SV), AV] =
-    State:
-      case (sm, sv) =>
-        val (sm2, am) = m1.run(sm)
-        val (sv2, av) = f(am).run(sv)
-        ((sm2, sv2), av)
 
   class ControllerImpl[T](val model: SPNModel.SPNModelImpl[T]) extends Controller:
     override type View = Window
@@ -41,20 +34,24 @@ object SPNController:
 
     private val minDeltaTime: FiniteDuration = 20.millis
 
-    override def gameLoop(events: LazyList[this.Event],
-                          updateM: State[this.Model, this.ModelOut],
-                          updateV: this.ModelOut => State[this.View, Unit],
-                          timeFactor: Double
+    override def eventDrivenLoop(
+      events: LazyList[this.Event],
+      updateM: State[this.Model, this.ModelOut],
+      updateV: this.ModelOut => State[this.View, Unit],
+      timeFactor: Double
     ): State[(model.SPN, Window), Unit] =
       for
         _ <- seqN(events.map:
-          case "Loop" => mv(updateM, event => seq(updateV(event),
-            loop(minDeltaTime.max((event.deltaTime * timeFactor).seconds))))
+          case "Loop" =>
+            mv(
+              updateM,
+              event => seq(updateV(event), schedule(minDeltaTime.max((event.deltaTime * timeFactor).seconds)))
+            )
           case _ => nop()
         )
       yield ()
 
-    private def loop(period: FiniteDuration): State[this.View, Unit] =
+    private def schedule(period: FiniteDuration): State[this.View, Unit] =
       State(w => (w.schedule(period.toMillis.toInt, "Loop"), ()))
 
     def nop(): State[(model.SPN, Window), Unit] = mv(model.nop(), _ => SPNView.WindowStateImpl.nop())
