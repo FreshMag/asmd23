@@ -62,7 +62,7 @@ object SPNSimulation:
             xLabel,
             yLabel,
             places.toSet.diff(placesToHide).map(_.toString),
-            spn.head.state.asMap.map:
+            spn.head.state.asMap.filter((place, _) => !placesToHide.contains(place)).map:
               case (place, count) => (place.toString, count.toDouble)
           )
       )
@@ -81,8 +81,7 @@ object SPNSimulation:
           ),
         timeFactor
       )
-      
-    
+
     private val controller =
       for
         events <- init
