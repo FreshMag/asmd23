@@ -54,7 +54,7 @@ object SPNSimulation:
     private def init: State[(model.SPN, Window), LazyList[Event]] =
       mv(
         model.get(),
-        spn =>
+        spnTrace =>
           ChartSimulationApp.windowCreation(
             windowWidth,
             windowHeight,
@@ -62,8 +62,7 @@ object SPNSimulation:
             xLabel,
             yLabel,
             places.toSet.diff(placesToHide).map(_.toString),
-            spn.head.state.asMap.filter((place, _) => !placesToHide.contains(place)).map:
-              case (place, count) => (place.toString, count.toDouble)
+            eventStateToChartValues(spnTrace.head.state.asMap, placesToHide)
           )
       )
 
