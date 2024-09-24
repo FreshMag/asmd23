@@ -1,5 +1,7 @@
 package u07.simulation.facade
 
+import org.jfree.data.xy.XYSeriesCollection
+
 import java.util.concurrent.LinkedBlockingQueue
 import javax.swing.*
 import javax.swing.WindowConstants.EXIT_ON_CLOSE
@@ -12,6 +14,13 @@ object SwingFunctionalFacade:
   trait Frame:
     def setSize(width: Int, height: Int): Frame
     def createChart(title: String, xLabel: String, yLabel: String, rowLabels: Iterable[String]): Frame
+    def createChartWithDataset(
+      title: String,
+      xLabel: String,
+      yLabel: String,
+      rowLabels: Iterable[String],
+      dataset: XYSeriesCollection
+    ): Frame
     def addButton(text: String, name: String): Frame
     def addChartValue(x: Double, y: Double, rowKey: String): Frame
     def addChartValues(values: Map[String, Double], x: Double): Frame
@@ -38,7 +47,16 @@ object SwingFunctionalFacade:
       this
 
     override def createChart(title: String, xLabel: String, yLabel: String, rowLabels: Iterable[String]): Frame =
-      jChart = LineChart2D.create(title, xLabel, yLabel, rowLabels)
+      createChartWithDataset(title, xLabel, yLabel, rowLabels, new XYSeriesCollection())
+
+    override def createChartWithDataset(
+      title: String,
+      xLabel: String,
+      yLabel: String,
+      rowLabels: Iterable[String],
+      dataset: XYSeriesCollection
+    ): Frame =
+      jChart = LineChart2D.create(title, xLabel, yLabel, dataset)
       content.add(jChart.asJPanel)
       chartRowLabels = rowLabels
       this

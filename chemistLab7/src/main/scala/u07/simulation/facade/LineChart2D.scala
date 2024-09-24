@@ -30,9 +30,9 @@ object LineChart2D:
     title: String = "",
     xAxisTitle: String = "",
     yAxisTitle: String = "",
-    rowLabels: Iterable[String] = Seq()
+    dataset: XYSeriesCollection = new XYSeriesCollection()
   ): LineChart2D =
-    LineChart2D(title, xAxisTitle, yAxisTitle, rowLabels)
+    LineChart2D(title, xAxisTitle, yAxisTitle, dataset)
 
 /**
  * Line chart as a [[JPanel]] using the [[org.jfree]] chart library.
@@ -42,11 +42,16 @@ object LineChart2D:
  *   label of the x-axis
  * @param yAxisTitle
  *   label of the y-axis
+ * @param dataset
+ *   initial dataset to display in the chart
  */
-class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String, rowLabels: Iterable[String]):
+class LineChart2D private (
+  title: String,
+  xAxisTitle: String,
+  yAxisTitle: String,
+  dataset: XYSeriesCollection
+):
   private val lineThickness = 3.0f
-
-  private val dataset = new XYSeriesCollection()
   private val chart = createChart
   private val panel = new ChartPanel(chart, false)
   panel.setFillZoomRectangle(true)
@@ -76,8 +81,10 @@ class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String
         dataset.addSeries(series)
         setStroke()
 
-
-  def setStroke(): Unit =
+  /**
+   * Sets the stroke for the lines inside the chart
+   */
+  private def setStroke(): Unit =
     Try:
       val renderer = chart.getPlot.asInstanceOf[XYPlot].getRenderer.asInstanceOf[XYLineAndShapeRenderer]
       val stroke = new BasicStroke(lineThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
