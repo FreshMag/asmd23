@@ -1,11 +1,9 @@
 package u07.simulation.facade
 
-import org.jfree.chart.plot.{CategoryPlot, XYPlot}
-import org.jfree.chart.renderer.category.{AbstractCategoryItemRenderer, LineAndShapeRenderer, StatisticalBarRenderer}
+import org.jfree.chart.plot.XYPlot
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
 import org.jfree.chart.ui.RectangleInsets
 import org.jfree.chart.{ChartFactory, ChartPanel, JFreeChart}
-import org.jfree.data.category.DefaultCategoryDataset
 import org.jfree.data.xy.{XYSeries, XYSeriesCollection}
 
 import java.awt.{BasicStroke, Color}
@@ -46,7 +44,7 @@ object LineChart2D:
  *   label of the y-axis
  */
 class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String, rowLabels: Iterable[String]):
-  private val lineThickness = 4.0f
+  private val lineThickness = 3.0f
 
   private val dataset = new XYSeriesCollection()
   private val chart = createChart
@@ -76,6 +74,15 @@ class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String
         val series = new XYSeries(row)
         series.add(x, y)
         dataset.addSeries(series)
+        setStroke()
+
+
+  def setStroke(): Unit =
+    Try:
+      val renderer = chart.getPlot.asInstanceOf[XYPlot].getRenderer.asInstanceOf[XYLineAndShapeRenderer]
+      val stroke = new BasicStroke(lineThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+      (0 until dataset.getSeries.size()).foreach:
+        renderer.setSeriesStroke(_, stroke)
 
   /**
    * Creates a line chart.
@@ -94,10 +101,5 @@ class LineChart2D private (title: String, xAxisTitle: String, yAxisTitle: String
     plot.setDomainCrosshairVisible(true)
     plot.setRangeCrosshairVisible(true)
 
-    val renderer = plot.getRenderer.asInstanceOf[XYLineAndShapeRenderer]
-
-    val stroke = new BasicStroke(lineThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
-    (0 until rowLabels.size).foreach:
-      renderer.setSeriesStroke(_, stroke)
-
+    setStroke()
     chart
