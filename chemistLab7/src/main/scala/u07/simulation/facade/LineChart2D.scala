@@ -49,9 +49,9 @@ class LineChart2D private (
   title: String,
   xAxisTitle: String,
   yAxisTitle: String,
-  dataset: XYSeriesCollection
+  dataset: XYSeriesCollection,
+  lineThickness: Float = 3.0f
 ):
-  private val lineThickness = 3.0f
   private val chart = createChart
   private val panel = new ChartPanel(chart, false)
   panel.setFillZoomRectangle(true)
@@ -100,13 +100,14 @@ class LineChart2D private (
     val chart = ChartFactory.createXYLineChart(title, xAxisTitle, yAxisTitle, dataset)
     chart.setBackgroundPaint(Color.WHITE)
 
-    val plot = chart.getPlot.asInstanceOf[XYPlot]
-    plot.setBackgroundPaint(Color.LIGHT_GRAY)
-    plot.setDomainGridlinePaint(Color.WHITE)
-    plot.setRangeGridlinePaint(Color.WHITE)
-    plot.setAxisOffset(new RectangleInsets(1.0, 1.0, 1.0, 1.0))
-    plot.setDomainCrosshairVisible(true)
-    plot.setRangeCrosshairVisible(true)
-
+    Try:
+      val plot = chart.getPlot.asInstanceOf[XYPlot]
+      plot.setBackgroundPaint(Color.LIGHT_GRAY)
+      plot.setDomainGridlinePaint(Color.WHITE)
+      plot.setRangeGridlinePaint(Color.WHITE)
+      plot.setAxisOffset(new RectangleInsets(1.0, 1.0, 1.0, 1.0))
+      plot.setDomainCrosshairVisible(true)
+      plot.setRangeCrosshairVisible(true)
+      
     setStroke()
     chart
