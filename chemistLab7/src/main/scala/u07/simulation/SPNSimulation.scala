@@ -10,6 +10,7 @@ object SPNSimulation:
   import u07.modelling.SPN.SPN
   import u07.modelling.CTMCSimulation.newSimulationTrace
   import u07.modelling.SPN.toCTMC
+  import u07.simulation.utils.SPNUtils.*
 
   import java.util.Random
 
@@ -47,7 +48,6 @@ object SPNSimulation:
     debugPrints: Boolean = false
   ) extends ControllerImpl[T](new SPNModelImpl[T]) with App:
 
-
     private def printStepConsole(step: ModelOut): Unit =
       println(s"---> Delta Time: ${step.deltaTime}, Transition to: ${step.state})")
 
@@ -68,21 +68,17 @@ object SPNSimulation:
       )
 
     private def createLoop(events: LazyList[Event]): State[(model.SPN, Window), Unit] =
-      gameLoop(
+      eventDrivenLoop(
         events,
         model.update(),
         event =>
           if debugPrints then printStepConsole(event)
-          addChartValues(
-            event.state.asMap
-              .filter((place, _) => !placesToHide.contains(place))
-              .map({ case (place, value) => (place.toString, value.toDouble) }),
-            event.absoluteTime
-          ),
+          addChartValues(eventStateToChartValues(event.state.asMap, placesToHide), event.absoluteTime)
+        ,
         timeFactor
       )
 
-    private val controller =
+    private def controller =
       for
         events <- init
         _ <- createLoop(events)
