@@ -1,7 +1,6 @@
-package u07.simulation
+package u07.simulation.mvc
 
-import u06.verifier.util.PetriNets.Place3ME
-import u07.examples.StochasticMutualExclusion
+import u06.verifier.util.PetriNets.{Place3ME, mutualExclusion}
 import u07.modelling.CTMCSimulation.Trace
 import u07.modelling.SPN.{Marking, toCTMC}
 
@@ -45,6 +44,8 @@ object SPNModel:
       State(s => (s, s))
 
   object SPNModelImplME extends SPNModelImpl[Place3ME]:
+    import u07.modelling.util.SPNs.mutualExclusion
+    
     def initialState(initialMarking: Marking[Place3ME]): SPN =
-      val spn = toCTMC(StochasticMutualExclusion.spn)
+      val spn = toCTMC(mutualExclusion)
       spn.newSimulationTrace(initialMarking, new Random)

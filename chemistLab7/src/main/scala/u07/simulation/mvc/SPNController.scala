@@ -1,10 +1,10 @@
-package u07.simulation
+package u07.simulation.mvc
 
 import u04.monads.Monads.*
 import u04.monads.Monads.Monad.*
 import u04.monads.States.State
 import u04.monads.States.State.*
-import u07.simulation.SPNView.WindowStateImpl.Window
+import u07.simulation.mvc.SPNView.WindowStateImpl.Window
 
 import scala.collection.immutable.LazyList
 import scala.concurrent.duration.FiniteDuration
@@ -23,6 +23,13 @@ object SPNController:
       updateV: ModelOut => State[View, Unit],
       timeFactor: Double
     ): State[(Model, View), Unit]
+
+  def mv[SM, SV, AM, AV](m1: State[SM, AM], f: AM => State[SV, AV]): State[(SM, SV), AV] =
+    State:
+      case (sm, sv) =>
+        val (sm2, am) = m1.run(sm)
+        val (sv2, av) = f(am).run(sv)
+        ((sm2, sv2), av)
 
   class ControllerImpl[T](val model: SPNModel.SPNModelImpl[T]) extends Controller:
     override type View = Window
@@ -46,13 +53,6 @@ object SPNController:
           case _ => nop()
         )
       yield ()
-
-    def mv[SM, SV, AM, AV](m1: State[SM, AM], f: AM => State[SV, AV]): State[(SM, SV), AV] =
-      State:
-        case (sm, sv) =>
-          val (sm2, am) = m1.run(sm)
-          val (sv2, av) = f(am).run(sv)
-          ((sm2, sv2), av)
 
     private def loop(period: FiniteDuration): State[this.View, Unit] =
       State(w => (w.schedule(period.toMillis.toInt, "Loop"), ()))

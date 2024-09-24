@@ -1,4 +1,4 @@
-package u07.simulation
+package u07.simulation.mvc
 
 import u04.monads.States.State
 import u07.simulation.facade.SwingFunctionalFacade.{Frame, createFrame}
