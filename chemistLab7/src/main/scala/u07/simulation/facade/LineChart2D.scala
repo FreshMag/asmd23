@@ -108,6 +108,6 @@ class LineChart2D private (
       plot.setAxisOffset(new RectangleInsets(1.0, 1.0, 1.0, 1.0))
       plot.setDomainCrosshairVisible(true)
       plot.setRangeCrosshairVisible(true)
-      
+
     setStroke()
     chart
