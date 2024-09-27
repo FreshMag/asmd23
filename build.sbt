@@ -27,6 +27,7 @@ lazy val verifierLab6 = project
     libraryDependencies ++= commonDependencies
   )
 
+
 lazy val chemistLab7 = project
   .settings(
     name := "chemistLab7",
