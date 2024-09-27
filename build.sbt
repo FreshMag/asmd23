@@ -39,6 +39,15 @@ lazy val chemistLab7 = project
     verifierLab6
   )
 
+lazy val designByQLearningLab9 = project
+  .settings(
+    name := "designByQLearningLab9",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    chemistLab7
+  )
+
 // ================================================================================================
 //  DEPENDENCIES
 // ================================================================================================
