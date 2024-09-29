@@ -6,7 +6,7 @@ object QMatrix:
 
   enum Move:
     case LEFT, RIGHT, UP, DOWN
-    override def toString = Map(LEFT -> "<", RIGHT -> ">", UP -> "^", DOWN -> "v")(this)
+    override def toString: String = Map(LEFT -> "<", RIGHT -> ">", UP -> "^", DOWN -> "v")(this)
 
   import Move.*
 
