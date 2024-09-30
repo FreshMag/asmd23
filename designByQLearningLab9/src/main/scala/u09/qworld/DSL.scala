@@ -28,8 +28,9 @@ object DSL:
     .toList
 
   given nodeToRowSetter: Conversion[Position => Node, Int => Row] =
-    nodeSetter => rowIndex =>
-      Row(rowIndex, List(nodeSetter((rowIndex, 0))))
+    nodeSetter =>
+      rowIndex =>
+        Row(rowIndex, List(nodeSetter((rowIndex, 0))))
 
   def $(money: Double): Position => Node = RewardNode(money, _)
   def o: Position => Node = RewardNode(0, _)
