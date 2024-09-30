@@ -24,25 +24,25 @@ object World:
       def actWith(move: Move): (Option[Position], Double)
       def position: Position
 
-    class AbstractNode(private val reward: Double, private val _position: Position) extends Node:
+    abstract class AbstractNode(private val _position: Position) extends Node:
       override def onArrive(world: World): Node = this
+      override def actWith(move: Move): (Option[Position], Double)
+      override def position: Position = _position
+
+    case class RewardNode(private val reward: Double, private val _position: Position)
+        extends AbstractNode(_position):
       override def actWith(move: Move): (Option[Position], Double) = move match
         case LEFT | RIGHT | UP | DOWN => (Some(position), reward)
         case _ => (None, 0)
-      override def position: Position = _position
-
-    case class BasicNode(private val reward: Double, private val _position: Position)
-        extends AbstractNode(reward, _position)
 
     case class BlockNode(private val reward: Double, private val _position: Position)
-        extends AbstractNode(reward, _position):
+        extends AbstractNode(_position):
       override def actWith(move: Move): (Option[(Int, Int)], Double) = move match
         case JUMP_LEFT | JUMP_RIGHT | JUMP_UP | JUMP_DOWN => (Some(position), reward)
         case _ => (None, 0)
 
-    case class BarrierNode(private val _position: Position) extends AbstractNode(-1, _position):
+    case class BarrierNode(private val _position: Position) extends AbstractNode(_position):
       override def actWith(move: Move): (Option[(Int, Int)], Double) = (None, -1)
-
 
   import Nodes.*
 
