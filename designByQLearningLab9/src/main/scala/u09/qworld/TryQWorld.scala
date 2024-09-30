@@ -3,17 +3,18 @@ package u09.qworld
 import u09.qworld.QMatrix.Facade
 
 object TryQWorld extends App :
-  import u09.qworld.World.Nodes.*
+  import DSL.*
 
-  val worldShape: World.World = List(
-    List(BasicNode(0, (0,0)), BlockNode(10, (0, 1)), BasicNode(0, (0, 2))),
-    List(BasicNode(10, (1,0)), BarrierNode((1,1)), BasicNode(0, (1, 2))),
-    List(BarrierNode((2,0)), BasicNode(0, (2,1)),  BlockNode(0, (2, 2)))
+  val worldShape: World.World = world(
+    /     | o      | $(1)  ,
+    /     | o      | o     ,
+    o     | _$(5)  | /     ,
+    $(10)
   )
 
 
   val rl: QMatrix.Facade = Facade(
-    initial = (worldShape, (2,1)),
+    initial = (worldShape, (0,1)),
     terminal = {case _ => false},
     gamma = 0.5,
     alpha = 0.5,
