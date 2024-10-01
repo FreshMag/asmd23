@@ -1,7 +1,7 @@
 package u09.qworld
 
 import u09.model.QRLImpl
-import u09.utils.ConsoleUtility
+import u09.qworld.utils.ConsoleUtility
 
 object QMatrix:
 
