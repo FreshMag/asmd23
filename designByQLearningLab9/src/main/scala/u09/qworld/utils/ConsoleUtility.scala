@@ -1,4 +1,4 @@
-package u09.utils
+package u09.qworld.utils
 
 import u09.qworld.World.Nodes.BarrierNode
 
