@@ -1,6 +1,8 @@
 package u09.utils
 
-object ConsoleColors:
+import u09.qworld.World.Nodes.BarrierNode
+
+object ConsoleUtility:
   val ANSI_RESET = "\u001B[0m"
   val ANSI_BLACK: String = "\u001B[30m"
   val ANSI_RED: String = "\u001B[31m"
@@ -19,3 +21,12 @@ object ConsoleColors:
   val ANSI_PURPLE_BACKGROUND: String = "\u001B[45m"
   val ANSI_CYAN_BACKGROUND: String = "\u001B[46m"
   val ANSI_WHITE_BACKGROUND: String = "\u001B[47m"
+
+  import u09.qworld.World.State
+
+  def toConsole[E](toShow: State => E, formatting: String, barrierNode: E): State => String =
+    case state@(world, (row, col)) =>
+      if world(row)(col).isInstanceOf[BarrierNode] then
+        ANSI_WHITE_BACKGROUND + formatting.format(barrierNode) + ANSI_RESET
+      else
+        formatting.format(toShow(state))
