@@ -18,7 +18,7 @@ object World:
 
   import Move.*
 
-  object Nodes:
+  private[qworld] object Nodes:
 
     trait Node:
       def actWith(move: Move): (Option[Position], Double, Node)
@@ -32,7 +32,7 @@ object World:
         extends AbstractNode(_position):
       override def actWith(move: Move): (Option[Position], Double, Node) = move match
         case LEFT | RIGHT | UP | DOWN => (Some(position), reward, this)
-        case _ => (None, -1, this)
+        case _ => (None, 0.0, this)
 
     case class BarrierNode(private val _position: Position) extends AbstractNode(_position):
       override def actWith(move: Move): (Option[(Int, Int)], Double, Node) = (None, -1, this)
@@ -42,8 +42,8 @@ object World:
       override def actWith(move: Move): (Option[(Int, Int)], Double, Node) =
         val result = move match
           case INTERACT_LEFT | INTERACT_RIGHT | INTERACT_UP | INTERACT_DOWN =>
-            (None, resourceReward, this.copy((resourceReward - 1) max 0))
-          case _ => (None, -1.0, this)
+            (None, resourceReward, copy((resourceReward - 1) max 0.0))
+          case _ => (None, 0.0, this)
         result
 
   import Nodes.*
@@ -51,47 +51,46 @@ object World:
   type Position = (Int, Int)
   type World = List[List[Node]]
   type State = (World, Position)
-
-  def availableActions(state: State): Set[Move] =
-    val (row, col) = state._2
-    val world = state._1
-
-    Move.values.map:
-      case move @ (LEFT | INTERACT_LEFT) => (move, (row, col - 1))
-      case move @ (RIGHT | INTERACT_RIGHT) => (move, (row, col + 1))
-      case move @ (UP | INTERACT_UP) => (move, (row - 1, col))
-      case move @ (DOWN | INTERACT_DOWN) => (move, (row + 1, col))
-      case move => (move, (row, col))
-    .filter:
-      case (_, (newRow, newCol))
+  
+  private def getTarget(move: Move)(position: Position): Position = 
+    val (row, col) = position
+    move match
+      case LEFT | INTERACT_LEFT => (row, col - 1)
+      case RIGHT | INTERACT_RIGHT => (row, col + 1)
+      case UP | INTERACT_UP => (row - 1, col)
+      case DOWN | INTERACT_DOWN => (row + 1, col)
+      case _ => (row, col)
+      
+  private def isValidPosition(position: Position, world: World): Boolean = 
+    position match
+      case (newRow, newCol)
         if newRow >= 0 && newCol >= 0 && newRow < world.length && newCol < world(newRow).length && !world(newRow)(
           newCol
         ).isInstanceOf[BarrierNode] => true
       case _ => false
-    .map(_._1)
+  
+  def availableActions(state: State): Set[Move] =
+    val (row, col) = state._2
+    val world = state._1
+
+    Move.values
+      .map(move => (move, getTarget(move)((row, col))))
+      .filter((_, position) => isValidPosition(position, world))
+      .map(_._1)
       .toSet
 
   def move(state: State, action: Move): (Double, State) =
-    val actTarget = (state, action) match
-      case ((world, (row, column)), UP | INTERACT_UP) if row - 1 >= 0 && world(row - 1).length > column =>
-        (row - 1, column)
-      case ((world, (row, column)), DOWN | INTERACT_DOWN)
-        if row + 1 < world.length && world(row + 1).length > column =>
-        (row + 1, column)
-      case ((world, (row, column)), RIGHT | INTERACT_RIGHT) if column + 1 < world(row).length =>
-        (row, column + 1)
-      case ((_, (row, column)), LEFT | INTERACT_LEFT) if column - 1 >= 0 => (row, column - 1)
-      case ((_, (row, column)), _) => (row, column)
+    val (prevWorld, prevPos) = state
+    val actTarget = getTarget(action)(prevPos)
 
     (actTarget, action) match
-      case (state._2, IDLE) => (0, state)
-      case (state._2, _) => (Double.MinValue, state) // illegal move
-      case _ =>
+      case (_, IDLE) => (0, state) // remaining idle cause no effect and zero reward
+      case (pos, _) if !isValidPosition(pos, prevWorld) => (Double.MinValue, state) // illegal move
+      case _ => // the agent performed a valid move 
         val (targetRow, targetCol) = actTarget
-        val (prevWorld, _) = state
         val (newPositionOption, reward, updatedNode) = prevWorld(targetRow)(targetCol).actWith(action)
         newPositionOption match
-          case Some((destRow, destCol)) =>
+          case Some((destRow, destCol)) => // the agent moved into a new position
             val newWorld = prevWorld.updated(destRow, prevWorld(destRow).updated(destCol, updatedNode))
             (reward, (newWorld, (destRow, destCol)))
-          case None => (reward, state)
+          case None => (reward, state) // the agent stayed in the same position
