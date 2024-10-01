@@ -52,6 +52,25 @@ object World:
   type World = List[List[Node]]
   type State = (World, Position)
 
+  def availableActions(state: State): Set[Move] =
+    val (row, col) = state._2
+    val world = state._1
+
+    Move.values.map:
+      case move @ (LEFT | INTERACT_LEFT) => (move, (row, col - 1))
+      case move @ (RIGHT | INTERACT_RIGHT) => (move, (row, col + 1))
+      case move @ (UP | INTERACT_UP) => (move, (row - 1, col))
+      case move @ (DOWN | INTERACT_DOWN) => (move, (row + 1, col))
+      case move => (move, (row, col))
+    .filter:
+      case (_, (newRow, newCol))
+        if newRow >= 0 && newCol >= 0 && newRow < world.length && newCol < world(newRow).length && !world(newRow)(
+          newCol
+        ).isInstanceOf[BarrierNode] => true
+      case _ => false
+    .map(_._1)
+      .toSet
+
   def move(state: State, action: Move): (Double, State) =
     val actTarget = (state, action) match
       case ((world, (row, column)), UP | INTERACT_UP) if row - 1 >= 0 && world(row - 1).length > column =>
