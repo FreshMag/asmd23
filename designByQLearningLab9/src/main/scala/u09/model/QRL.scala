@@ -31,13 +31,13 @@ trait QRL:
 
   // an updatable, table-oriented QFunction, to optimise selection over certain actions
   trait Q extends ((State, Action) => Reward):
-    def actions: Set[Action]
+    def actions: State => Set[Action]
     def update(s: State, a: Action, v: Reward): Q
-    def bestPolicy: Policy = s => actions.maxBy(this(s, _))
+    def bestPolicy: Policy = s => actions(s).maxBy(this(s, _))
     def epsPolicy(f: Probability): Policy = 
-      case _ if Stochastics.drawFiltered(_ < f) => Stochastics.uniformDraw(actions)
+      case s if Stochastics.drawFiltered(_ < f) => Stochastics.uniformDraw(actions(s))
       case s => bestPolicy(s)
-    def vFunction: State => Reward = s => actions.map(this(s, _)).max
+    def vFunction: State => Reward = s => actions(s).map(this(s, _)).max
 
   // The learning system, with parameters
   trait LearningProcess:

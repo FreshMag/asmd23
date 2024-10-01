@@ -20,7 +20,7 @@ trait QRLImpl extends QRL:
 
   // Move Map-based implementation, with defaults for terminal and unexplored states
   case class QFunction(
-                        override val actions: Set[Action],
+                        override val actions: State => Set[Action],
                         v0: Reward = 0.0,
                         terminal: State => Boolean = (s: State) => false,
                         terminalValue: Double = 0.0) extends Q:

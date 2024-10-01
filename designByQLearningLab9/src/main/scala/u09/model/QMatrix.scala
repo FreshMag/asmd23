@@ -35,7 +35,7 @@ object QMatrix:
         // computes rewards, and possibly a jump
         (reward.apply((s, a)), jumps.orElse[(Node, Move), Node](_ => n2)(s, a))
 
-    def qFunction = QFunction(Move.values.toSet, v0, terminal)
+    def qFunction = QFunction(_ => Move.values.toSet, v0, terminal)
     def qSystem = QSystem(environment = qEnvironment(), initial, terminal)
     def makeLearningInstance() = QLearning(qSystem, gamma, alpha, epsilon, qFunction)
 

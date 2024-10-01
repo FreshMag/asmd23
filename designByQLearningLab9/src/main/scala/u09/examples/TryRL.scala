@@ -10,4 +10,4 @@ object TryRL extends App:
     i <- -5 to 10
   do
     println:
-      (i, qf.actions.maxBy(qf(Pos(i), _)), qf.actions.map(qf(Pos(i), _)).max)
+      (i, qf.actions(Pos(i)).maxBy(qf(Pos(i), _)), qf.actions(Pos(i)).map(qf(Pos(i), _)).max)
