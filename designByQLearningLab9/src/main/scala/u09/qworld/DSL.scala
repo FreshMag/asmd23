@@ -1,6 +1,6 @@
 package u09.qworld
 
-import u09.qworld.World.Nodes.{BarrierNode, BlockNode, Node, RewardNode}
+import u09.qworld.World.Nodes.{BarrierNode, ExtractionNode, Node, RewardNode}
 import u09.qworld.World.Position
 
 import scala.annotation.targetName
@@ -35,5 +35,4 @@ object DSL:
   def $(money: Double): Position => Node = RewardNode(money, _)
   def o: Position => Node = RewardNode(0, _)
   def / : Position => Node = BarrierNode(_)
-  def __ : Position => Node = BlockNode(0, _)
-  def _$(money: Double): Position => Node = BlockNode(money, _)
+  def ?(resource: Double): Position => Node = ExtractionNode(resource, _)
